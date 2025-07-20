@@ -26,22 +26,23 @@ contract CustodialWallet {
         authorizedAccounts[owner] = true;
     }
 
+    // Modificateurs
     modifier onlyOwner() {
         require(msg.sender == owner, "Seul le owner peut faire cela");
         _;
     }
 
     modifier onlyAuthorized() {
-        require(authorizedAccounts[msg.sender], "No permissions");
+        require(authorizedAccounts[msg.sender], "Non autorise");
         _;
     }
 
     modifier notFrozen(address user) {
-        require(!frozenAccounts[user], "asset frozen");
+        require(!frozenAccounts[user], "Compte frozen");
         _;
     }
 
-    // Ajouter un compte autorisé à geler/dégeler
+    // Autoriser un compte à geler/dégeler
     function authorizeAccount(address account) external onlyOwner {
         authorizedAccounts[account] = true;
         emit Authorized(account);
@@ -65,14 +66,19 @@ contract CustodialWallet {
         emit AccountUnfrozen(user);
     }
 
-    // Dépôt
+    // Dépôt de fonds
     function deposit() external payable notFrozen(msg.sender) {
-        require(msg.value > 0, "Montant nul");
-        balances[msg.sender] += msg.value;
-        emit Deposit(msg.sender, msg.value);
+        _deposit(msg.sender, msg.value);
     }
 
-    // Retrait
+    // Fonction interne pour traitement du dépôt
+    function _deposit(address user, uint256 amount) internal {
+        require(amount > 0, "Montant nul");
+        balances[user] += amount;
+        emit Deposit(user, amount);
+    }
+
+    // Retrait de fonds
     function withdraw(uint256 amount) external notFrozen(msg.sender) {
         require(balances[msg.sender] >= amount, "Solde insuffisant");
         balances[msg.sender] -= amount;
@@ -80,17 +86,18 @@ contract CustodialWallet {
         emit Withdraw(msg.sender, amount);
     }
 
-    // Solde utilisateur
+    // Consulter le solde d’un utilisateur
     function getBalance(address user) external view returns (uint256) {
         return balances[user];
     }
 
-    // Retrait d'urgence (admin)
+    // Retrait d'urgence par le propriétaire
     function emergencyWithdrawAll() external onlyOwner {
         payable(owner).transfer(address(this).balance);
     }
 
+    // Permet de recevoir des fonds directement
     receive() external payable {
-        deposit();
+        _deposit(msg.sender, msg.value);
     }
 }
