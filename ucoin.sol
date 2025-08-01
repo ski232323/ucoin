@@ -2,81 +2,38 @@
 // Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.27;
 
-import {ERC1363} from "@openzeppelin/contracts/token/ERC20/extensions/ERC1363.sol";
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import {ERC20FlashMint} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20FlashMint.sol";
-import {ERC20Pausable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
-import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
-import {ERC20Votes} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
-import {Nonces} from "@openzeppelin/contracts/utils/Nonces.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {ERC1363Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC1363Upgradeable.sol";
+import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import {ERC20BurnableUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
+import {ERC20FlashMintUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20FlashMintUpgradeable.sol";
+import {ERC20PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PausableUpgradeable.sol";
+import {ERC20PermitUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
+import {ERC20VotesUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {NoncesUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract UCOIN is 
-    ERC20, 
-    ERC20Burnable, 
-    ERC20Pausable, 
-    Ownable, 
-    ERC1363, 
-    ERC20Permit, 
-    ERC20Votes, 
-    ERC20FlashMint 
-{
-    // Comptes gelés
-    mapping(address => bool) public frozenAccounts;
+contract UCOINv2 is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC20PausableUpgradeable, OwnableUpgradeable, ERC1363Upgradeable, ERC20PermitUpgradeable, ERC20VotesUpgradeable, ERC20FlashMintUpgradeable, UUPSUpgradeable {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
 
-    // Comptes autorisés à geler/dégeler
-    mapping(address => bool) public authorizedAccounts;
-
-    // Events
-    event AccountFrozen(address indexed user);
-    event AccountUnfrozen(address indexed user);
-    event Authorized(address indexed account);
-    event Revoked(address indexed account);
-
-    constructor(address recipient, address initialOwner)
-        ERC20("UCOIN", "UCN")
-        Ownable(initialOwner)
-        ERC20Permit("UCOIN")
+    function initialize(address recipient, address initialOwner)
+        public initializer
     {
-        _mint(recipient, 1000000 * 10 ** decimals());
-        authorizedAccounts[initialOwner] = true; // Le créateur peut geler/dégeler
-    }
+        __ERC20_init("UCOINv2", "UCNv2");
+        __ERC20Burnable_init();
+        __ERC20Pausable_init();
+        __Ownable_init(initialOwner);
+        __ERC1363_init();
+        __ERC20Permit_init("UCOINv2");
+        __ERC20Votes_init();
+        __ERC20FlashMint_init();
+        __UUPSUpgradeable_init();
 
-    // Autoriser un compte à geler/dégeler
-    function authorizeAccount(address account) external onlyOwner {
-        authorizedAccounts[account] = true;
-        emit Authorized(account);
-    }
-
-    // Révoquer les droits d’un compte
-    function revokeAuthorization(address account) external onlyOwner {
-        authorizedAccounts[account] = false;
-        emit Revoked(account);
-    }
-
-    // Geler un compte
-    function freezeAccount(address user) external {
-        require(authorizedAccounts[msg.sender], "No authorization");
-        frozenAccounts[user] = true;
-        emit AccountFrozen(user);
-    }
-
-    // Dégeler un compte
-    function unfreezeAccount(address user) external {
-        require(authorizedAccounts[msg.sender], "No authorization");
-        frozenAccounts[user] = false;
-        emit AccountUnfrozen(user);
-    }
-
-    // Blocage des transferts si compte gelé
-    function _update(address from, address to, uint256 value)
-        internal
-        override(ERC20, ERC20Pausable, ERC20Votes)
-    {
-        require(!frozenAccounts[from], "Sender frozen");
-        require(!frozenAccounts[to], "Reciever frozen");
-        super._update(from, to, value);
+        _mint(recipient, 10 * 10 ** decimals());
     }
 
     function pause() public onlyOwner {
@@ -91,10 +48,25 @@ contract UCOIN is
         _mint(to, amount);
     }
 
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override
+        onlyOwner
+    {}
+
+    // The following functions are overrides required by Solidity.
+
+    function _update(address from, address to, uint256 value)
+        internal
+        override(ERC20Upgradeable, ERC20PausableUpgradeable, ERC20VotesUpgradeable)
+    {
+        super._update(from, to, value);
+    }
+
     function nonces(address owner)
         public
         view
-        override(ERC20Permit, Nonces)
+        override(ERC20PermitUpgradeable, NoncesUpgradeable)
         returns (uint256)
     {
         return super.nonces(owner);
