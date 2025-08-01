@@ -7193,12 +7193,26 @@ abstract contract UUPSUpgradeable is Initializable, IERC1822Proxiable {
 
 
 // Compatible with OpenZeppelin Contracts ^5.0.0
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.27;
+
+
+
+
+
+
+
+
+
+
+
 
 contract UCOINv2 is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC20PausableUpgradeable, OwnableUpgradeable, ERC1363Upgradeable, ERC20PermitUpgradeable, ERC20VotesUpgradeable, ERC20FlashMintUpgradeable, UUPSUpgradeable {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
+    }
+    function initializeV3() public reinitializer(3) {
+        // Si besoin, initialiser des variables ajoutées dans v3
     }
 
     function initialize(address recipient, address initialOwner)
@@ -7252,4 +7266,18 @@ contract UCOINv2 is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, E
     {
         return super.nonces(owner);
     }
+    
+
+// Fonction rigolote : Envoi d'un message rigolo passé en argument
+function sendFunnyMessage(string memory message) public onlyOwner {
+    // Vérifie que le message n'est pas vide
+    require(bytes(message).length > 0, "Le message ne peut pas etre vide!");
+
+    // Émission d'un événement avec le message rigolo passé en argument
+    emit FunnyMessage(message);
+}
+
+// Événement pour envoyer un message rigolo
+event FunnyMessage(string message);
+
 }

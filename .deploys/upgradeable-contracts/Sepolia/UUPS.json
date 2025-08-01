@@ -1,0 +1,12 @@
+{
+  "id": 11155111,
+  "network": "Sepolia",
+  "deployments": {
+    "0xae16602410d3e14ea65de25cf6a7ed925dc75c9a": {
+      "date": "2025-08-01T13:27:00.769Z",
+      "contractName": "UCOINv2",
+      "fork": "london",
+      "implementationAddress": "0x61a84926Aa368B6cc50C4138ED45c8bb1a24f6ae"
+    }
+  }
+}

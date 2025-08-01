@@ -71,4 +71,18 @@ contract UCOINv2 is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, E
     {
         return super.nonces(owner);
     }
+    
+
+// Fonction rigolote : Envoi d'un message rigolo passé en argument
+function sendFunnyMessage(string memory message) public onlyOwner {
+    // Vérifie que le message n'est pas vide
+    require(bytes(message).length > 0, "Le message ne peut pas etre vide!");
+
+    // Émission d'un événement avec le message rigolo passé en argument
+    emit FunnyMessage(message);
+}
+
+// Événement pour envoyer un message rigolo
+event FunnyMessage(string message);
+
 }

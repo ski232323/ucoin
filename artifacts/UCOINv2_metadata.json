@@ -519,6 +519,19 @@
 				"inputs": [
 					{
 						"indexed": false,
+						"internalType": "string",
+						"name": "message",
+						"type": "string"
+					}
+				],
+				"name": "FunnyMessage",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
 						"internalType": "uint64",
 						"name": "version",
 						"type": "uint64"
@@ -1114,6 +1127,13 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "initializeV3",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -1293,6 +1313,19 @@
 			{
 				"inputs": [],
 				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "message",
+						"type": "string"
+					}
+				],
+				"name": "sendFunnyMessage",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -2379,11 +2412,11 @@
 			]
 		},
 		"ucoin.sol": {
-			"keccak256": "0xa0c15750f9b44b0b38fa6c1bb37af81da36fcc30dda87f01514e1f3e39c43088",
+			"keccak256": "0x9bba56ea70d3dc2aeaa3d8afeefe300443b12a1083ccc261eef8d4b307f52b34",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ecc44627404b55eca1207e3cc0482944a6791f90b99beea235e048458d53dea0",
-				"dweb:/ipfs/QmT1e2tyXua3cRrHMJoRMDNNKUwy148MVLQWcfR9hakADM"
+				"bzz-raw://73c6655fb9ab1a614a1eac61674b1bdcae61e4978813eda67747084d5aa0d2c8",
+				"dweb:/ipfs/QmThxjwrcRukrm38WgxLC4htm7haTdTu6Ffvwhp4u6e1Jr"
 			]
 		}
 	},
